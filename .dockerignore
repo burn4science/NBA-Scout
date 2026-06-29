@@ -1,0 +1,36 @@
+# Build-context excludes — keep the context tiny.
+# The rag-feeder build only needs: {pyproject.toml,src,config},
+# shared/{pyproject.toml,src}, and uv.lock. Everything below is irrelevant.
+#
+# NOTE: do not add a broad `test_*.py` glob here — application code such as
+# use_cases/test_connections.py legitimately starts with "test_" and must ship
+# in the wheel. Exclude test *directories* only.
+
+.git
+.gitignore
+
+# Virtual environments (the 5.3 GB workspace venv lives here)
+.venv
+**/.venv
+
+# Python caches / build artifacts
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.egg-info
+.ruff_cache
+.pytest_cache
+.mypy_cache
+
+# Runtime data and logs (bind-mounted at run time, not needed to build)
+data
+logs
+
+# Docs and plans — not part of the image
+docs
+
+# Test directories — not copied into the image
+tests
+
+# Secrets — provided at runtime via env_file, never baked in
+**/.env

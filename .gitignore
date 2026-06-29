@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+.cache/
+*.dotnet/
+
+# Environments
+.env
+.env.local
+.env.*.local
+.venv
+*env/
+*venv*/
+ENV/
+env.bak/
+venv.bak/
+
+# Keep environment templates (these are committed)
+!.env.example
+
+# project specific
+.vscode*/
+.ssh/
+.gnupg/
+.git/
+# .dvc/*
+.ipython/*
+.local/*
+.keras/*
+*.egg-info/
+# data/interim/*
+# data/raw/*
+# data/results/*
+data/
+**/logs/*
+**/logs/*/*.log
+!**/logs/*/
+!**/logs/*/.gitkeep
+**/reports/*
+memories/*
+models/*
+trash/
+_Archiv/
+.streamlit/cache/*
+mlruns/*
+.config/*
+assets/*
+.codegraph/*
+
+# single files
+.bash_history
+.bash_logout
+.gitconfig
+.python_history
+*delete*
+*.bak
+
+# c++
+build/
+*vcxproj*
+*.sln
+.vs/
