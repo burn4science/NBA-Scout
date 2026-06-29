@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import io
 
-from chunking.config import ChunkConfig, load_config
+from appconfig.models import ChunkingConfig
+from appconfig.settings import settings
 from chunking.protocol import Chunk
 
 
@@ -14,8 +15,8 @@ class DoclingChunker:
     the heavy stack is only required to actually instantiate the chunker.
     """
 
-    def __init__(self, config: ChunkConfig | None = None) -> None:
-        self._config = config or load_config()
+    def __init__(self, config: ChunkingConfig | None = None) -> None:
+        self._config = config or settings.chunking
         from docling.chunking import HybridChunker
 
         self._chunker = HybridChunker(

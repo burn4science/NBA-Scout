@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from chunking.config import load_config
+from appconfig.settings import settings
 from chunking.docling_chunker import DoclingChunker
 from chunking.protocol import Chunker
 
@@ -8,4 +8,4 @@ from chunking.protocol import Chunker
 def get_chunker() -> Chunker:
     """Construct the configured chunker. Swap this single function to change
     the chunking backend."""
-    return DoclingChunker(load_config())
+    return DoclingChunker(settings.chunking)

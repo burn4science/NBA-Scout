@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import os
 import sys
 
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
+from appconfig.settings import settings
 from db.upsert import upsert_player_season_stats, upsert_players, upsert_seasons, upsert_teams
-from ingest.config import load_config
 from ingest.fetchers.players import fetch_players
 from ingest.fetchers.stats import fetch_season_stats
 from ingest.fetchers.teams import fetch_teams
@@ -16,12 +14,11 @@ from ingest.retry import with_retry
 
 
 def main() -> None:
-    load_dotenv()
     log = get_logger()
 
-    cfg = load_config()
+    cfg = settings.ingestion
 
-    db_url = os.environ.get("DATABASE_URL")
+    db_url = settings.secrets.database_url
     if not db_url:
         log.error("DATABASE_URL is not set. Copy .env.example to .env and configure it.")
         sys.exit(1)

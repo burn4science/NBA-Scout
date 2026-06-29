@@ -12,6 +12,7 @@ dependencies = [
     "python-dotenv>=1.0",
     "pgvector>=0.3",
     "openai>=1.0",
+    "pydantic-settings>=2.14.2",
 ]
 
 [project.optional-dependencies]
@@ -24,7 +25,7 @@ requires      = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ingest", "src/db", "src/chunking", "src/embed"]
+packages = ["src/ingest", "src/db", "src/chunking", "src/embed", "src/appconfig"]
 
 [dependency-groups]
 dev = ["ruff>=0.4", "pytest>=8.0"]
@@ -37,7 +38,7 @@ target-version = "py312"
 select = ["E", "F", "I", "UP"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["ingest", "db", "chunking", "embed"]
+known-first-party = ["ingest", "db", "chunking", "embed", "appconfig"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

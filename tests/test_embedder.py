@@ -1,8 +1,11 @@
 import pytest
 
-from embed.config import EmbedConfig
+from appconfig.models import EmbeddingConfig
+from appconfig.settings import settings
 from embed.in_memory import InMemoryEmbedder
 from embed.openai_compatible import EmbeddingError, OpenAICompatibleEmbedder
+
+_CFG = EmbeddingConfig(model="m", dimension=768, timeout_seconds=30, batch_size=32)
 
 
 def test_in_memory_embedder_dimension_and_determinism() -> None:
@@ -16,12 +19,10 @@ def test_in_memory_embedder_dimension_and_determinism() -> None:
 
 
 def test_missing_base_url_raises(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("EMBEDDING_BASE_URL", raising=False)
-    cfg = EmbedConfig(
-        {"embedding": {"model": "m", "dimension": 768, "timeout_seconds": 30, "batch_size": 32}}
-    )
+    # Secrets are loaded once at import, so simulate "unset" on the loaded object.
+    monkeypatch.setattr(settings.secrets, "embedding_base_url", None)
     with pytest.raises(EmbeddingError, match="EMBEDDING_BASE_URL"):
-        OpenAICompatibleEmbedder(config=cfg)
+        OpenAICompatibleEmbedder(config=_CFG)
 
 
 class _FakeData:
@@ -48,10 +49,7 @@ class _FakeClient:
 
 
 def _embedder(dim_returned: int) -> OpenAICompatibleEmbedder:
-    cfg = EmbedConfig(
-        {"embedding": {"model": "m", "dimension": 768, "timeout_seconds": 30, "batch_size": 32}}
-    )
-    embedder = OpenAICompatibleEmbedder(config=cfg, base_url="http://fake/v1", api_key="x")
+    embedder = OpenAICompatibleEmbedder(config=_CFG, base_url="http://fake/v1", api_key="x")
     embedder._client = _FakeClient(dim_returned)
     return embedder
 
