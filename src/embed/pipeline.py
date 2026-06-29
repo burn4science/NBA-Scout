@@ -110,9 +110,6 @@ def run_pipeline(chunker: Chunker, embedder: Embedder, log) -> tuple[int, int]:
 
 
 def main() -> None:
-    from dotenv import load_dotenv
-
-    load_dotenv()
     log = get_logger()
     log.info("NBA Scout embedding pipeline starting")
     run_pipeline(get_chunker(), get_embedder(), log)

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import os
+from openai import OpenAI
 
-from embed.config import EmbedConfig, load_config
+from appconfig.models import EmbeddingConfig
+from appconfig.settings import settings
 
 
 class EmbeddingError(RuntimeError):
@@ -16,23 +17,21 @@ class OpenAICompatibleEmbedder:
 
     def __init__(
         self,
-        config: EmbedConfig | None = None,
+        config: EmbeddingConfig | None = None,
         base_url: str | None = None,
         api_key: str | None = None,
     ) -> None:
-        self._config = config or load_config()
+        self._config = config or settings.embedding
         self.model = self._config.model
         self.dimension = self._config.dimension
 
-        base_url = base_url or os.environ.get("EMBEDDING_BASE_URL")
+        base_url = base_url or settings.secrets.embedding_base_url
         if not base_url:
             raise EmbeddingError(
                 "EMBEDDING_BASE_URL is not set. Configure it in .env "
                 "(e.g. http://localhost:1234/v1 for LM Studio)."
             )
-        api_key = api_key or os.environ.get("EMBEDDING_API_KEY") or "not-needed"
-
-        from openai import OpenAI
+        api_key = api_key or settings.secrets.embedding_api_key or "not-needed"
 
         self._client = OpenAI(
             base_url=base_url, api_key=api_key, timeout=self._config.timeout_seconds

@@ -1,3 +1,6 @@
+# NBA data-ingestion tunables — grouped here by pipeline stage (what data we
+# pull and how fast), not by code module. No secrets. Loaded centrally into
+# `settings.ingestion`.
 [ingestion]
 seasons                  = ["2020-21", "2021-22", "2022-23", "2023-24", "2024-25"]
 rate_limit_delay_seconds = 0.6

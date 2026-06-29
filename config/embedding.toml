@@ -1,0 +1,24 @@
+# Vectorization pipeline tunables: how documents are chunked and embedded.
+# Grouped here by pipeline stage, not by code module. No secrets — the embedding
+# endpoint and API key are environment-specific and live in .env
+# (EMBEDDING_BASE_URL / EMBEDDING_API_KEY). Loaded centrally into
+# `settings.chunking` and `settings.embedding`.
+
+# Chunking parameters. The tokenizer governs how Docling's HybridChunker counts
+# tokens when packing chunks toward `max_tokens`.
+[chunking]
+max_tokens     = 512
+overlap_tokens = 64
+tokenizer      = "sentence-transformers/all-MiniLM-L6-v2"
+merge_peers    = true
+
+# Embedding parameters. `model` is the id the OpenAI-compatible backend exposes:
+#   LM Studio:    the loaded model id (e.g. "text-embedding-embeddinggemma-300m")
+#   Ollama Cloud: the model name (e.g. "embeddinggemma")
+# `dimension` is the vector space size and is LOCKED to the schema's vector(N);
+# it is asserted against db.models.EMBEDDING_DIM at startup.
+[embedding]
+model           = "text-embedding-embeddinggemma-300m"
+dimension       = 768
+timeout_seconds = 30
+batch_size      = 32
