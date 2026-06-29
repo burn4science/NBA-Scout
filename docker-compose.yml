@@ -1,5 +1,9 @@
 name: nba_scout
 
+# All application services share one self-contained image (built once, reused).
+# Build contexts are relative so Portainer can build from the cloned repo on the
+# homelab. No service depends on anything on the development host.
+
 services:
   db:
     image: pgvector/pgvector:pg16
@@ -20,23 +24,54 @@ services:
       start_period: 30s
 
   migrate:
-    build: .
+    build:
+      context: .
+    image: nba-scout:latest
     command: uv run alembic upgrade head
     restart: "no"
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # The migration creates the locked-down nba_app role with this password.
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
 
   ingest:
-    build: .
+    build:
+      context: .
+    image: nba-scout:latest
     command: uv run python -m ingest.run
     restart: "no"
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    volumes:
+      - ${HOST_SHARED_DATA_DIR}/logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  embed:
+    build:
+      context: .
+    image: nba-scout:latest
+    command: uv run python -m embed.pipeline
+    restart: "no"
+    env_file: .env
+    environment:
+      # App connects as the non-owner role, so RLS is enforced against it.
+      APP_DATABASE_URL: postgresql://nba_app:${APP_DB_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Privileged path for global-scope writes (still subject to FORCE RLS).
+      MIGRATION_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Embedding endpoint is fully env-driven: the same image runs against dev
+      # LM Studio or homelab/Ollama Cloud with no rebuild and no host coupling.
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY}
+    extra_hosts:
+      # Lets the container reach a host-run LM Studio during local dev only.
+      - "host.docker.internal:host-gateway"
     volumes:
       - ${HOST_SHARED_DATA_DIR}/logs:/app/logs
     depends_on:

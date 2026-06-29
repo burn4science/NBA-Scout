@@ -1,0 +1,8 @@
+# Chunking parameters (private to the chunk module). Tunable only here;
+# no secrets. The tokenizer governs how Docling's HybridChunker counts tokens
+# when packing chunks toward `max_tokens`.
+[chunking]
+max_tokens     = 512
+overlap_tokens = 64
+tokenizer      = "sentence-transformers/all-MiniLM-L6-v2"
+merge_peers    = true

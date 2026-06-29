@@ -1,0 +1,13 @@
+# Embedding parameters (private to the embed module). The endpoint and API key
+# are environment-specific and live in .env (EMBEDDING_BASE_URL / EMBEDDING_API_KEY),
+# never here. Only the model identity and request shaping are tunable here.
+#
+# `model` is the id the OpenAI-compatible backend exposes:
+#   LM Studio:    the loaded model id (e.g. "text-embedding-embeddinggemma-300m")
+#   Ollama Cloud: the model name (e.g. "embeddinggemma")
+# `dimension` is the vector space size and is LOCKED to the schema's vector(N).
+[embedding]
+model           = "text-embedding-embeddinggemma-300m"
+dimension       = 768
+timeout_seconds = 30
+batch_size      = 32

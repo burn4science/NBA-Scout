@@ -10,14 +10,21 @@ dependencies = [
     "alembic>=1.13",
     "loguru>=0.7",
     "python-dotenv>=1.0",
+    "pgvector>=0.3",
+    "openai>=1.0",
 ]
+
+[project.optional-dependencies]
+# Heavy, layout-aware chunking stack (pulls torch). Installed in the Docker
+# image (`uv sync --extra chunking`) but kept out of the light local test venv.
+chunking = ["docling>=2.0"]
 
 [build-system]
 requires      = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ingest", "src/db"]
+packages = ["src/ingest", "src/db", "src/chunking", "src/embed"]
 
 [dependency-groups]
 dev = ["ruff>=0.4", "pytest>=8.0"]
@@ -30,7 +37,7 @@ target-version = "py312"
 select = ["E", "F", "I", "UP"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["ingest", "db"]
+known-first-party = ["ingest", "db", "chunking", "embed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
